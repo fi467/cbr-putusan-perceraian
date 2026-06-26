@@ -1,0 +1,869 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": []
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Install Library"
+      ],
+      "metadata": {
+        "id": "Ff8OFJYbY_HR"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!pip install requests beautifulsoup4 pandas pdfplumber tqdm lxml openpyxl"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "UWnC54e1ZET9",
+        "outputId": "d1c91aab-1df3-48f5-dc21-079c73645a31"
+      },
+      "execution_count": 1,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Requirement already satisfied: requests in /usr/local/lib/python3.12/dist-packages (2.32.4)\n",
+            "Requirement already satisfied: beautifulsoup4 in /usr/local/lib/python3.12/dist-packages (4.13.5)\n",
+            "Requirement already satisfied: pandas in /usr/local/lib/python3.12/dist-packages (2.2.2)\n",
+            "Collecting pdfplumber\n",
+            "  Downloading pdfplumber-0.11.10-py3-none-any.whl.metadata (43 kB)\n",
+            "\u001b[?25l     \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m0.0/43.7 kB\u001b[0m \u001b[31m?\u001b[0m eta \u001b[36m-:--:--\u001b[0m\r\u001b[2K     \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m43.7/43.7 kB\u001b[0m \u001b[31m2.8 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hRequirement already satisfied: tqdm in /usr/local/lib/python3.12/dist-packages (4.67.3)\n",
+            "Requirement already satisfied: lxml in /usr/local/lib/python3.12/dist-packages (6.1.1)\n",
+            "Requirement already satisfied: openpyxl in /usr/local/lib/python3.12/dist-packages (3.1.5)\n",
+            "Requirement already satisfied: charset_normalizer<4,>=2 in /usr/local/lib/python3.12/dist-packages (from requests) (3.4.7)\n",
+            "Requirement already satisfied: idna<4,>=2.5 in /usr/local/lib/python3.12/dist-packages (from requests) (3.18)\n",
+            "Requirement already satisfied: urllib3<3,>=1.21.1 in /usr/local/lib/python3.12/dist-packages (from requests) (2.5.0)\n",
+            "Requirement already satisfied: certifi>=2017.4.17 in /usr/local/lib/python3.12/dist-packages (from requests) (2026.5.20)\n",
+            "Requirement already satisfied: soupsieve>1.2 in /usr/local/lib/python3.12/dist-packages (from beautifulsoup4) (2.8.4)\n",
+            "Requirement already satisfied: typing-extensions>=4.0.0 in /usr/local/lib/python3.12/dist-packages (from beautifulsoup4) (4.15.0)\n",
+            "Requirement already satisfied: numpy>=1.26.0 in /usr/local/lib/python3.12/dist-packages (from pandas) (2.0.2)\n",
+            "Requirement already satisfied: python-dateutil>=2.8.2 in /usr/local/lib/python3.12/dist-packages (from pandas) (2.9.0.post0)\n",
+            "Requirement already satisfied: pytz>=2020.1 in /usr/local/lib/python3.12/dist-packages (from pandas) (2025.2)\n",
+            "Requirement already satisfied: tzdata>=2022.7 in /usr/local/lib/python3.12/dist-packages (from pandas) (2026.2)\n",
+            "Collecting pdfminer.six==20260107 (from pdfplumber)\n",
+            "  Downloading pdfminer_six-20260107-py3-none-any.whl.metadata (4.3 kB)\n",
+            "Collecting Pillow>=12.2.0 (from pdfplumber)\n",
+            "  Downloading pillow-12.2.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (8.8 kB)\n",
+            "Collecting pypdfium2>=5.9.0 (from pdfplumber)\n",
+            "  Downloading pypdfium2-5.10.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (70 kB)\n",
+            "\u001b[2K     \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m70.3/70.3 kB\u001b[0m \u001b[31m7.9 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hRequirement already satisfied: cryptography>=36.0.0 in /usr/local/lib/python3.12/dist-packages (from pdfminer.six==20260107->pdfplumber) (49.0.0)\n",
+            "Requirement already satisfied: et-xmlfile in /usr/local/lib/python3.12/dist-packages (from openpyxl) (2.0.0)\n",
+            "Requirement already satisfied: six>=1.5 in /usr/local/lib/python3.12/dist-packages (from python-dateutil>=2.8.2->pandas) (1.17.0)\n",
+            "Requirement already satisfied: cffi>=2.0.0 in /usr/local/lib/python3.12/dist-packages (from cryptography>=36.0.0->pdfminer.six==20260107->pdfplumber) (2.0.0)\n",
+            "Requirement already satisfied: pycparser in /usr/local/lib/python3.12/dist-packages (from cffi>=2.0.0->cryptography>=36.0.0->pdfminer.six==20260107->pdfplumber) (3.0)\n",
+            "Downloading pdfplumber-0.11.10-py3-none-any.whl (60 kB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m60.0/60.0 kB\u001b[0m \u001b[31m6.6 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hDownloading pdfminer_six-20260107-py3-none-any.whl (6.6 MB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m6.6/6.6 MB\u001b[0m \u001b[31m97.3 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hDownloading pillow-12.2.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (7.1 MB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m7.1/7.1 MB\u001b[0m \u001b[31m150.2 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hDownloading pypdfium2-5.10.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.7 MB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m3.7/3.7 MB\u001b[0m \u001b[31m133.5 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hInstalling collected packages: pypdfium2, Pillow, pdfminer.six, pdfplumber\n",
+            "  Attempting uninstall: Pillow\n",
+            "    Found existing installation: pillow 11.3.0\n",
+            "    Uninstalling pillow-11.3.0:\n",
+            "      Successfully uninstalled pillow-11.3.0\n",
+            "\u001b[31mERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.\n",
+            "gradio 5.50.0 requires pillow<12.0,>=8.0, but you have pillow 12.2.0 which is incompatible.\u001b[0m\u001b[31m\n",
+            "\u001b[0mSuccessfully installed Pillow-12.2.0 pdfminer.six-20260107 pdfplumber-0.11.10 pypdfium2-5.10.1\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Import"
+      ],
+      "metadata": {
+        "id": "HvaXcp4mZGKg"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import os\n",
+        "import re\n",
+        "import json\n",
+        "import time\n",
+        "import requests\n",
+        "import pandas as pd\n",
+        "\n",
+        "from tqdm import tqdm\n",
+        "from bs4 import BeautifulSoup\n",
+        "import pdfplumber"
+      ],
+      "metadata": {
+        "id": "aNdzMQcqZH3G"
+      },
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Buat Folder"
+      ],
+      "metadata": {
+        "id": "p6i_KueBZJZM"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "folders = [\n",
+        "    \"data/raw\",\n",
+        "    \"data/processed\",\n",
+        "    \"data/eval\",\n",
+        "    \"data/results\",\n",
+        "    \"logs\"\n",
+        "]\n",
+        "\n",
+        "for f in folders:\n",
+        "    os.makedirs(f, exist_ok=True)\n",
+        "\n",
+        "print(\"Folder siap\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "TUUANEa8ZNaS",
+        "outputId": "c19937be-a4a4-407e-9e64-3a97630d4924"
+      },
+      "execution_count": 3,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Folder siap\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Konfigurasi"
+      ],
+      "metadata": {
+        "id": "iz9YLsTjZP0m"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "BASE_URL = \"https://putusan3.mahkamahagung.go.id\"\n",
+        "\n",
+        "CATEGORY_URL = (\n",
+        "    \"https://putusan3.mahkamahagung.go.id/\"\n",
+        "    \"direktori/index/pengadilan/pa-malang/\"\n",
+        "    \"kategori/perceraian.html\"\n",
+        ")\n",
+        "\n",
+        "MAX_CASES = 50"
+      ],
+      "metadata": {
+        "id": "QrItaYTKZQmN"
+      },
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "c1f2fdfc",
+        "outputId": "20e2eab8-564c-4d8f-e4ff-1b75f20ee941"
+      },
+      "source": [
+        "print('Checking CATEGORY_URL content:')\n",
+        "try:\n",
+        "    response = requests.get(CATEGORY_URL, timeout=30)\n",
+        "    response.raise_for_status() # Raise an HTTPError for bad responses (4xx or 5xx)\n",
+        "    print(response.text[:1000]) # Print first 1000 characters of the response\n",
+        "except requests.exceptions.RequestException as e:\n",
+        "    print(f\"Error fetching URL: {e}\")\n"
+      ],
+      "execution_count": 16,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Checking CATEGORY_URL content:\n",
+            "Error fetching URL: 403 Client Error: Forbidden for url: https://putusan3.mahkamahagung.go.id/direktori/index/pengadilan/pa-malang/kategori/perceraian.html\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Ambil Link Putusan"
+      ],
+      "metadata": {
+        "id": "P_NQyrCOZR0x"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def collect_case_links(max_cases=50):\n",
+        "\n",
+        "    links = []\n",
+        "\n",
+        "    page = 1\n",
+        "\n",
+        "    while len(links) < max_cases:\n",
+        "\n",
+        "        url = f\"{CATEGORY_URL}?page={page}\"\n",
+        "\n",
+        "        print(\"Scraping:\", url)\n",
+        "\n",
+        "        r = requests.get(url, timeout=30)\n",
+        "\n",
+        "        soup = BeautifulSoup(r.text, \"html.parser\")\n",
+        "\n",
+        "        for a in soup.find_all(\"a\", href=True):\n",
+        "\n",
+        "            href = a[\"href\"]\n",
+        "\n",
+        "            if \"/direktori/putusan/\" in href:\n",
+        "\n",
+        "                full = href\n",
+        "\n",
+        "                if not href.startswith(\"http\"):\n",
+        "                    full = BASE_URL + href\n",
+        "\n",
+        "                if full not in links:\n",
+        "                    links.append(full)\n",
+        "\n",
+        "        page += 1\n",
+        "\n",
+        "        time.sleep(1)\n",
+        "\n",
+        "        if page > 30:\n",
+        "            break\n",
+        "\n",
+        "    return links[:max_cases]"
+      ],
+      "metadata": {
+        "id": "9R6PpFKpZVDj"
+      },
+      "execution_count": 5,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Jalankan Pengambilan Link"
+      ],
+      "metadata": {
+        "id": "bTmfogzpZY48"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "case_links = collect_case_links(MAX_CASES)\n",
+        "\n",
+        "print(\"Jumlah link:\", len(case_links))\n",
+        "\n",
+        "case_links[:5]"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "NGNAo8QLZZvD",
+        "outputId": "eb4a9ebf-29ba-44b4-d2fb-c0da2f12bfce"
+      },
+      "execution_count": 6,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Scraping: https://putusan3.mahkamahagung.go.id/direktori/index/pengadilan/pa-malang/kategori/perceraian.html?page=1\n",
+            "Scraping: https://putusan3.mahkamahagung.go.id/direktori/index/pengadilan/pa-malang/kategori/perceraian.html?page=2\n",
+            "Scraping: https://putusan3.mahkamahagung.go.id/direktori/index/pengadilan/pa-malang/kategori/perceraian.html?page=3\n",
+            "Scraping: https://putusan3.mahkamahagung.go.id/direktori/index/pengadilan/pa-malang/kategori/perceraian.html?page=4\n",
+            "Scraping: https://putusan3.mahkamahagung.go.id/direktori/index/pengadilan/pa-malang/kategori/perceraian.html?page=5\n",
+            "Scraping: https://putusan3.mahkamahagung.go.id/direktori/index/pengadilan/pa-malang/kategori/perceraian.html?page=6\n",
+            "Scraping: https://putusan3.mahkamahagung.go.id/direktori/index/pengadilan/pa-malang/kategori/perceraian.html?page=7\n",
+            "Scraping: https://putusan3.mahkamahagung.go.id/direktori/index/pengadilan/pa-malang/kategori/perceraian.html?page=8\n",
+            "Scraping: https://putusan3.mahkamahagung.go.id/direktori/index/pengadilan/pa-malang/kategori/perceraian.html?page=9\n",
+            "Scraping: https://putusan3.mahkamahagung.go.id/direktori/index/pengadilan/pa-malang/kategori/perceraian.html?page=10\n",
+            "Scraping: https://putusan3.mahkamahagung.go.id/direktori/index/pengadilan/pa-malang/kategori/perceraian.html?page=11\n",
+            "Scraping: https://putusan3.mahkamahagung.go.id/direktori/index/pengadilan/pa-malang/kategori/perceraian.html?page=12\n",
+            "Scraping: https://putusan3.mahkamahagung.go.id/direktori/index/pengadilan/pa-malang/kategori/perceraian.html?page=13\n",
+            "Scraping: https://putusan3.mahkamahagung.go.id/direktori/index/pengadilan/pa-malang/kategori/perceraian.html?page=14\n",
+            "Scraping: https://putusan3.mahkamahagung.go.id/direktori/index/pengadilan/pa-malang/kategori/perceraian.html?page=15\n",
+            "Scraping: https://putusan3.mahkamahagung.go.id/direktori/index/pengadilan/pa-malang/kategori/perceraian.html?page=16\n",
+            "Scraping: https://putusan3.mahkamahagung.go.id/direktori/index/pengadilan/pa-malang/kategori/perceraian.html?page=17\n",
+            "Scraping: https://putusan3.mahkamahagung.go.id/direktori/index/pengadilan/pa-malang/kategori/perceraian.html?page=18\n",
+            "Scraping: https://putusan3.mahkamahagung.go.id/direktori/index/pengadilan/pa-malang/kategori/perceraian.html?page=19\n",
+            "Scraping: https://putusan3.mahkamahagung.go.id/direktori/index/pengadilan/pa-malang/kategori/perceraian.html?page=20\n",
+            "Scraping: https://putusan3.mahkamahagung.go.id/direktori/index/pengadilan/pa-malang/kategori/perceraian.html?page=21\n",
+            "Scraping: https://putusan3.mahkamahagung.go.id/direktori/index/pengadilan/pa-malang/kategori/perceraian.html?page=22\n",
+            "Scraping: https://putusan3.mahkamahagung.go.id/direktori/index/pengadilan/pa-malang/kategori/perceraian.html?page=23\n",
+            "Scraping: https://putusan3.mahkamahagung.go.id/direktori/index/pengadilan/pa-malang/kategori/perceraian.html?page=24\n",
+            "Scraping: https://putusan3.mahkamahagung.go.id/direktori/index/pengadilan/pa-malang/kategori/perceraian.html?page=25\n",
+            "Scraping: https://putusan3.mahkamahagung.go.id/direktori/index/pengadilan/pa-malang/kategori/perceraian.html?page=26\n",
+            "Scraping: https://putusan3.mahkamahagung.go.id/direktori/index/pengadilan/pa-malang/kategori/perceraian.html?page=27\n",
+            "Scraping: https://putusan3.mahkamahagung.go.id/direktori/index/pengadilan/pa-malang/kategori/perceraian.html?page=28\n",
+            "Scraping: https://putusan3.mahkamahagung.go.id/direktori/index/pengadilan/pa-malang/kategori/perceraian.html?page=29\n",
+            "Scraping: https://putusan3.mahkamahagung.go.id/direktori/index/pengadilan/pa-malang/kategori/perceraian.html?page=30\n",
+            "Jumlah link: 0\n"
+          ]
+        },
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "[]"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 6
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Ambil Metadata + PDF"
+      ],
+      "metadata": {
+        "id": "jxATmdd4ZbHV"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def parse_case_page(url):\n",
+        "\n",
+        "    r = requests.get(url, timeout=30)\n",
+        "\n",
+        "    soup = BeautifulSoup(r.text, \"html.parser\")\n",
+        "\n",
+        "    text = soup.get_text(\" \", strip=True)\n",
+        "\n",
+        "    nomor = \"\"\n",
+        "\n",
+        "    m = re.search(r\"Nomor\\s+([A-Za-z0-9./-]+)\", text)\n",
+        "\n",
+        "    if m:\n",
+        "        nomor = m.group(1)\n",
+        "\n",
+        "    pdf_url = None\n",
+        "\n",
+        "    for a in soup.find_all(\"a\", href=True):\n",
+        "\n",
+        "        href = a[\"href\"]\n",
+        "\n",
+        "        if \".pdf\" in href.lower() or \"download_file\" in href:\n",
+        "\n",
+        "            if href.startswith(\"http\"):\n",
+        "                pdf_url = href\n",
+        "            else:\n",
+        "                pdf_url = BASE_URL + href\n",
+        "\n",
+        "            break\n",
+        "\n",
+        "    return {\n",
+        "        \"nomor\": nomor,\n",
+        "        \"url\": url,\n",
+        "        \"pdf_url\": pdf_url\n",
+        "    }"
+      ],
+      "metadata": {
+        "id": "xP7PUOKrZi1O"
+      },
+      "execution_count": 7,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Download PDF"
+      ],
+      "metadata": {
+        "id": "OTznjzcUZk1n"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "metadata = []\n",
+        "\n",
+        "for idx, link in enumerate(tqdm(case_links)):\n",
+        "\n",
+        "    try:\n",
+        "\n",
+        "        info = parse_case_page(link)\n",
+        "\n",
+        "        pdf_url = info[\"pdf_url\"]\n",
+        "\n",
+        "        if pdf_url is None:\n",
+        "            continue\n",
+        "\n",
+        "        pdf_path = f\"data/raw/case_{idx+1:03d}.pdf\"\n",
+        "\n",
+        "        r = requests.get(pdf_url, timeout=60)\n",
+        "\n",
+        "        with open(pdf_path, \"wb\") as f:\n",
+        "            f.write(r.content)\n",
+        "\n",
+        "        info[\"pdf_path\"] = pdf_path\n",
+        "\n",
+        "        metadata.append(info)\n",
+        "\n",
+        "        time.sleep(1)\n",
+        "\n",
+        "    except Exception as e:\n",
+        "\n",
+        "        print(\"ERROR:\", e)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "6qgAS4eTZmWD",
+        "outputId": "54200870-95b9-4e5e-a695-2ab50987fade"
+      },
+      "execution_count": 8,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "0it [00:00, ?it/s]\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "PDF ke TXT"
+      ],
+      "metadata": {
+        "id": "BU4Erq5dZneg"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def pdf_to_text(pdf_file):\n",
+        "\n",
+        "    text = []\n",
+        "\n",
+        "    try:\n",
+        "\n",
+        "        with pdfplumber.open(pdf_file) as pdf:\n",
+        "\n",
+        "            for page in pdf.pages:\n",
+        "\n",
+        "                t = page.extract_text()\n",
+        "\n",
+        "                if t:\n",
+        "                    text.append(t)\n",
+        "\n",
+        "    except:\n",
+        "        pass\n",
+        "\n",
+        "    return \"\\n\".join(text)"
+      ],
+      "metadata": {
+        "id": "60vHYoIRZqas"
+      },
+      "execution_count": 9,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Cleaning"
+      ],
+      "metadata": {
+        "id": "4fhnEU3MZtV3"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def clean_text(text):\n",
+        "\n",
+        "    text = text.lower()\n",
+        "\n",
+        "    text = re.sub(r'\\n+', ' ', text)\n",
+        "\n",
+        "    text = re.sub(r'\\s+', ' ', text)\n",
+        "\n",
+        "    text = re.sub(r'halaman\\s+\\d+', ' ', text)\n",
+        "\n",
+        "    text = re.sub(r'www\\.[^\\s]+', ' ', text)\n",
+        "\n",
+        "    text = re.sub(r'putusan\\.mahkamahagung\\.go\\.id', ' ', text)\n",
+        "\n",
+        "    return text.strip()"
+      ],
+      "metadata": {
+        "id": "rdkzewukZuL5"
+      },
+      "execution_count": 10,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Ekstraksi Metadata"
+      ],
+      "metadata": {
+        "id": "jtfG9vVvZwya"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "records = []\n",
+        "\n",
+        "log_file = open(\"logs/cleaning.log\", \"w\", encoding=\"utf-8\")\n",
+        "\n",
+        "for item in tqdm(metadata):\n",
+        "\n",
+        "    pdf_path = item[\"pdf_path\"]\n",
+        "\n",
+        "    raw_text = pdf_to_text(pdf_path)\n",
+        "\n",
+        "    clean = clean_text(raw_text)\n",
+        "\n",
+        "    txt_path = pdf_path.replace(\".pdf\", \".txt\")\n",
+        "\n",
+        "    with open(txt_path, \"w\", encoding=\"utf-8\") as f:\n",
+        "        f.write(clean)\n",
+        "\n",
+        "    word_count = len(clean.split())\n",
+        "\n",
+        "    log_file.write(\n",
+        "        f\"{pdf_path} | words={word_count}\\n\"\n",
+        "    )\n",
+        "\n",
+        "    records.append({\n",
+        "\n",
+        "        \"case_id\": os.path.basename(pdf_path),\n",
+        "\n",
+        "        \"nomor_perkara\": item[\"nomor\"],\n",
+        "\n",
+        "        \"url\": item[\"url\"],\n",
+        "\n",
+        "        \"pdf_path\": pdf_path,\n",
+        "\n",
+        "        \"txt_path\": txt_path,\n",
+        "\n",
+        "        \"length\": word_count,\n",
+        "\n",
+        "        \"text_full\": clean\n",
+        "    })\n",
+        "\n",
+        "log_file.close()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "PxCiGi62Zxrn",
+        "outputId": "c16b1581-b929-47a8-a682-d5a995306300"
+      },
+      "execution_count": 11,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "0it [00:00, ?it/s]\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Simpan CSV"
+      ],
+      "metadata": {
+        "id": "xoN236nDZz6x"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "df = pd.DataFrame(records)\n",
+        "\n",
+        "csv_path = \"data/processed/cases.csv\"\n",
+        "\n",
+        "df.to_csv(\n",
+        "    csv_path,\n",
+        "    index=False,\n",
+        "    encoding=\"utf-8-sig\"\n",
+        ")\n",
+        "\n",
+        "df.head()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 53
+        },
+        "id": "6oXXDcCXZ0fL",
+        "outputId": "3992f7bb-8b5e-4a19-9867-534c5e818869"
+      },
+      "execution_count": 12,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "Empty DataFrame\n",
+              "Columns: []\n",
+              "Index: []"
+            ],
+            "text/html": [
+              "\n",
+              "  <div id=\"df-bf24e2c5-9aa3-41db-b2ae-86971bd6a0ac\" class=\"colab-df-container\">\n",
+              "    <div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>\n",
+              "    <div class=\"colab-df-buttons\">\n",
+              "\n",
+              "  <div class=\"colab-df-container\">\n",
+              "    <button class=\"colab-df-convert\" onclick=\"convertToInteractive('df-bf24e2c5-9aa3-41db-b2ae-86971bd6a0ac')\"\n",
+              "            title=\"Convert this dataframe to an interactive table.\"\n",
+              "            style=\"display:none;\">\n",
+              "\n",
+              "  <svg xmlns=\"http://www.w3.org/2000/svg\" height=\"24px\" viewBox=\"0 -960 960 960\">\n",
+              "    <path d=\"M120-120v-720h720v720H120Zm60-500h600v-160H180v160Zm220 220h160v-160H400v160Zm0 220h160v-160H400v160ZM180-400h160v-160H180v160Zm440 0h160v-160H620v160ZM180-180h160v-160H180v160Zm440 0h160v-160H620v160Z\"/>\n",
+              "  </svg>\n",
+              "    </button>\n",
+              "\n",
+              "  <style>\n",
+              "    .colab-df-container {\n",
+              "      display:flex;\n",
+              "      gap: 12px;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-convert {\n",
+              "      background-color: #E8F0FE;\n",
+              "      border: none;\n",
+              "      border-radius: 50%;\n",
+              "      cursor: pointer;\n",
+              "      display: none;\n",
+              "      fill: #1967D2;\n",
+              "      height: 32px;\n",
+              "      padding: 0 0 0 0;\n",
+              "      width: 32px;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-convert:hover {\n",
+              "      background-color: #E2EBFA;\n",
+              "      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);\n",
+              "      fill: #174EA6;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-buttons div {\n",
+              "      margin-bottom: 4px;\n",
+              "    }\n",
+              "\n",
+              "    [theme=dark] .colab-df-convert {\n",
+              "      background-color: #3B4455;\n",
+              "      fill: #D2E3FC;\n",
+              "    }\n",
+              "\n",
+              "    [theme=dark] .colab-df-convert:hover {\n",
+              "      background-color: #434B5C;\n",
+              "      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);\n",
+              "      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));\n",
+              "      fill: #FFFFFF;\n",
+              "    }\n",
+              "  </style>\n",
+              "\n",
+              "    <script>\n",
+              "      const buttonEl =\n",
+              "        document.querySelector('#df-bf24e2c5-9aa3-41db-b2ae-86971bd6a0ac button.colab-df-convert');\n",
+              "      buttonEl.style.display =\n",
+              "        google.colab.kernel.accessAllowed ? 'block' : 'none';\n",
+              "\n",
+              "      async function convertToInteractive(key) {\n",
+              "        const element = document.querySelector('#df-bf24e2c5-9aa3-41db-b2ae-86971bd6a0ac');\n",
+              "        const dataTable =\n",
+              "          await google.colab.kernel.invokeFunction('convertToInteractive',\n",
+              "                                                    [key], {});\n",
+              "        if (!dataTable) return;\n",
+              "\n",
+              "        const docLinkHtml = 'Like what you see? Visit the ' +\n",
+              "          '<a target=\"_blank\" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'\n",
+              "          + ' to learn more about interactive tables.';\n",
+              "        element.innerHTML = '';\n",
+              "        dataTable['output_type'] = 'display_data';\n",
+              "        await google.colab.output.renderOutput(dataTable, element);\n",
+              "        const docLink = document.createElement('div');\n",
+              "        docLink.innerHTML = docLinkHtml;\n",
+              "        element.appendChild(docLink);\n",
+              "      }\n",
+              "    </script>\n",
+              "  </div>\n",
+              "\n",
+              "\n",
+              "    </div>\n",
+              "  </div>\n"
+            ],
+            "application/vnd.google.colaboratory.intrinsic+json": {
+              "type": "dataframe",
+              "variable_name": "df",
+              "summary": "{\n  \"name\": \"df\",\n  \"rows\": 0,\n  \"fields\": []\n}"
+            }
+          },
+          "metadata": {},
+          "execution_count": 12
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Simpan JSON"
+      ],
+      "metadata": {
+        "id": "uQcUM-7oZ24Y"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "json_path = \"data/processed/cases.json\"\n",
+        "\n",
+        "with open(\n",
+        "    json_path,\n",
+        "    \"w\",\n",
+        "    encoding=\"utf-8\"\n",
+        ") as f:\n",
+        "\n",
+        "    json.dump(\n",
+        "        records,\n",
+        "        f,\n",
+        "        ensure_ascii=False,\n",
+        "        indent=2\n",
+        "    )\n",
+        "\n",
+        "print(\"JSON tersimpan\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "7z5bO69fZ32_",
+        "outputId": "281e1337-5655-40d2-e3b5-e573e659157a"
+      },
+      "execution_count": 13,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "JSON tersimpan\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Validasi"
+      ],
+      "metadata": {
+        "id": "asvz-GNCZ7BM"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "valid_cases = df[df[\"length\"] > 500]\n",
+        "\n",
+        "print(\"Total dokumen :\", len(df))\n",
+        "print(\"Valid dokumen :\", len(valid_cases))"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 353
+        },
+        "id": "G9Aym8oLZ7ye",
+        "outputId": "1a70b531-fbd8-4134-b461-434d15f48e17"
+      },
+      "execution_count": 30,
+      "outputs": [
+        {
+          "output_type": "error",
+          "ename": "KeyError",
+          "evalue": "'length'",
+          "traceback": [
+            "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+            "\u001b[0;31mKeyError\u001b[0m                                  Traceback (most recent call last)",
+            "\u001b[0;32m/tmp/ipykernel_4844/1520806640.py\u001b[0m in \u001b[0;36m<cell line: 0>\u001b[0;34m()\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mvalid_cases\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mdf\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0mdf\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m\"length\"\u001b[0m\u001b[0;34m]\u001b[0m \u001b[0;34m>\u001b[0m \u001b[0;36m500\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      2\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      3\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m\"Total dokumen :\"\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mlen\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mdf\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      4\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m\"Valid dokumen :\"\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mlen\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mvalid_cases\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.12/dist-packages/pandas/core/frame.py\u001b[0m in \u001b[0;36m__getitem__\u001b[0;34m(self, key)\u001b[0m\n\u001b[1;32m   4100\u001b[0m             \u001b[0;32mif\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mcolumns\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mnlevels\u001b[0m \u001b[0;34m>\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m   4101\u001b[0m                 \u001b[0;32mreturn\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_getitem_multilevel\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mkey\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m-> 4102\u001b[0;31m             \u001b[0mindexer\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mcolumns\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mget_loc\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mkey\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m   4103\u001b[0m             \u001b[0;32mif\u001b[0m \u001b[0mis_integer\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindexer\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m   4104\u001b[0m                 \u001b[0mindexer\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;34m[\u001b[0m\u001b[0mindexer\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.12/dist-packages/pandas/core/indexes/range.py\u001b[0m in \u001b[0;36mget_loc\u001b[0;34m(self, key)\u001b[0m\n\u001b[1;32m    415\u001b[0m                 \u001b[0;32mraise\u001b[0m \u001b[0mKeyError\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mkey\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;32mfrom\u001b[0m \u001b[0merr\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    416\u001b[0m         \u001b[0;32mif\u001b[0m \u001b[0misinstance\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mkey\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mHashable\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 417\u001b[0;31m             \u001b[0;32mraise\u001b[0m \u001b[0mKeyError\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mkey\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    418\u001b[0m         \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_check_indexing_error\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mkey\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    419\u001b[0m         \u001b[0;32mraise\u001b[0m \u001b[0mKeyError\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mkey\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;31mKeyError\u001b[0m: 'length'"
+          ]
+        }
+      ]
+    }
+  ]
+}
